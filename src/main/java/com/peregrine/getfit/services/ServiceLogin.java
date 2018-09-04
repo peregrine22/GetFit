@@ -7,31 +7,29 @@ import com.peregrine.getfit.util.PasswordCypher;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-
+/**
+ * Сервис для входа поьзователя
+ */
 public class ServiceLogin {
     private static final Logger logger = LogManager.getLogger(CommandMissing.class.getName());
-
-    // Получить зарегестрированного пользовтеля
+    /**
+     * Получить зарегестрированного пользовтеля. Получить спиок пользователей и сравнить их с введенными данными.
+     * @param email введенный почтовый адрес.
+     * @param password введенный пароль.
+     * @return пользователя, если такой есть. null - если нет.
+     */
     public static User getRegisteredUser(String email, String password) {
         AbstractDAOFactory factory = AbstractDAOFactory.getDAOFactory("MySql");
-        ArrayList<User> usersList = factory.getUserDAO().findAll();
+        User user = factory.getUserDAO().findUserByEmail(email);
         try {
-            for (User user: usersList) {
-                if (email.equals(user.getEmail()) && PasswordCypher.verifyPassword(password,user.getPassword())) {
-                    return user;
-                }
+            if (user == null || !PasswordCypher.verifyPassword(password, user.getPassword())) {
+                return null;
             }
+            return user;
         }
         catch (PasswordCypher.InvalidHashException | PasswordCypher.CannotPerformOperationException e) {
-            logger.error(e.getMessage());
+            logger.error("error = " + e.getMessage());
+            return null;
         }
-        return null;
-    }
-    // Получить информацию пользователя, сохраненная в Session.
-    public static User getLoginedUser(HttpSession session) {
-        User logedInUser = (User)session.getAttribute("user");
-        return logedInUser;
     }
 }

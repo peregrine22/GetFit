@@ -8,11 +8,12 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+/**Фильтр для отслеживания пользователя в сессии*/
 public class LoginFilter implements Filter {
     private static Logger logger = Logger.getLogger(LoginFilter.class);
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
 
     }
 
